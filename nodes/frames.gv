@@ -1,7 +1,0 @@
-digraph G {
-"/odom" -> "/base_footprint"[label="Broadcaster: /capybara_control_16998_1381846118628\nAverage rate: 3.542 Hz\nMost recent transform: 0.017 sec old \nBuffer length: 4.800 sec\n"];
-edge [style=invis];
- subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
-"Recorded at time: 1381846224.378"[ shape=plaintext ] ;
- }->"/odom";
-}
