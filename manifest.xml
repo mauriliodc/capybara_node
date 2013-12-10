@@ -1,13 +1,13 @@
 <package>
-  <description brief="capybara_running_wild">
+  <description brief="capybara_node">
 
-     capybara_running_wild
+     Capybara Node
 
   </description>
   <author>malcom</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/capybara_running_wild</url>
+  <url>http://ros.org/wiki/capybara_node</url>
   <depend package="std_msgs"/>
   <depend package="rospy"/>
   <depend package="tf"/>
