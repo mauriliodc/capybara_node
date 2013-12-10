@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import roslib
-roslib.load_manifest('capybara_running_wild')
+roslib.load_manifest('capybara_node')
 from std_msgs.msg import String
 from std_msgs.msg import Int8MultiArray
 from nav_msgs.msg import Odometry
