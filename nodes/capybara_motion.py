@@ -3,6 +3,7 @@ import rospy
 import roslib
 roslib.load_manifest('capybara_running_wild')
 from std_msgs.msg import String
+from std_msgs.msg import Int8MultiArray
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
@@ -15,6 +16,24 @@ import threading
 import sys
 import traceback
 import time
+import signal
+import sys
+
+threads = []
+
+def signal_handler(signal, frame):
+	print 'Killing the capys'
+	global killHasToLive
+	global threads
+	global killHasToLive
+	killHasToLive=0
+	for thread in threads:
+		thread.keepRunning = False
+	print 'Killed'
+	sys.exit(0)
+	
+	
+signal.signal(signal.SIGINT, signal_handler)
 
 def odometryFromTicks(tr, tl, kr, kl, b):
 	global poseX
@@ -23,7 +42,7 @@ def odometryFromTicks(tr, tl, kr, kl, b):
 	dr = kr*tr;
 	dl = kl*tl;
 	R = (dl+dr)/(2);
-	theta = (dr-dl)/(2*b);
+	theta = (dr-dl)/(b);
 	poseT+=theta
 	x = R * cos(poseT);
 	y = R * sin(poseT);
@@ -50,7 +69,11 @@ class CleaningThread(threading.Thread):
 		global started
 		global totalTickLeft
 		global totalTickRight
+		global killHasToLive
+		
 		while 1 :
+			if killHasToLive==0:
+				break
 			#ser.flushInput()
 			#ser.flushOutput()
 			if self.getCommand==0:
@@ -71,8 +94,9 @@ class CleaningThread(threading.Thread):
 					(x,y,theta)=odometryFromTicks(-tl, tr, calibTickLeft,calibTickRight,calibBaseline)
 					totalTickLeft+=(-tl)
 					totalTickRight+=tr
-					print str(totalTickLeft)+" "+str(totalTickRight)
-					print "X: "+ str(poseX)+ " Y: "+str(poseY)+" Theta: "+str(poseT)
+					#print str(totalTickLeft)+" "+str(totalTickRight)
+					print "X: "+ str(poseX)+ " Y: "+str(poseY)+" Theta: "+str(poseT)					
+					
 					self.getCommand=0
 
 					quaternion = Quaternion()
@@ -95,38 +119,52 @@ class CleaningThread(threading.Thread):
 					
 					
 					pub.publish(odom)
+					#ticksPayload[0]=tl
+					#ticksPayload[1]=tr
+					#pub2.publish(ticksPayload)
+					#SAVE TO CSV TO SAVE TIME, UGLY HAS TO BE CHANGED
+					#ticksFile=open("ticks.odo", "a")
+					#ticksFile.write(str(tl)+" "+str(tr)+"\n")
 					self.buffer=""
+					#print "TICKS: "+str(tl)+" "+str(tr)+"\n"
 
 #############################################################################################
 
 ##GLOBAL STUFF#####################################################################
-LINEAR_SPEED = 30
-ANGULAR_SPEED = 20
+LINEAR_SPEED = 60
+ANGULAR_SPEED = 60
 header = "$"
 footer = "%"
 k1=1 
-k2=1
+k2=0.5
 BigBuffer=''
 started=0
-calibTickLeft=0.014
-calibTickRight=0.014
-calibBaseline=0.195
+killHasToLive=1
+#====CAPYBARA GOMMATO=======
+#calibTickLeft= 4.95e-05
+#calibTickRight=4.95e-05
+#calibBaseline=0.407
+#============================
+
+#====CAPYBARA ERRATICO=======
+#calibTickLeft= 1.40e-05
+#calibTickRight=1.40e-05
+#calibBaseline=0.342
+#============================
+
 poseX=0
 poseY=0
 poseT=0
 totalTickLeft=0
 totalTickRight=0
+
 ###################################################################################
 
-
-##SERIAL STUFF####################################################################
-ser = serial.Serial('/dev/ttyUSB0', 115200)
-ser.xonxoff = False
-ser.rtscts = False
-ser.dsrdtr = False
-ser.open()
-ser.isOpen()
-###################################################################################
+ser=serial.Serial()
+serialPort=""
+calibTickLeft=0
+calibTickRight=0
+calibBaseline=0
 
 ##UTILITY FUNCTIONS###############################################################
 def add_nulls(num, cnt=2):
@@ -179,10 +217,42 @@ def MainLoop():
 
 if __name__ == '__main__':
 	rospy.init_node('capybara_control', anonymous=True)
+	rospy.myargv(argv=sys.argv)
+
+	#GETTING PARAMETERS
+	#global calibTickLeft 
+	calibTickLeft = rospy.get_param('~calibTickLeft', 1.40e-05)
+	
+	#global calibTickRight
+	calibTickRight = rospy.get_param('~calibTickRight', 1.40e-05)
+	
+	#global calibBaseline
+	calibBaseline = rospy.get_param('~calibBaseline', 0.342)
+	
+	#global serialPort
+	serialPort = rospy.get_param('~serialPort', '/dev/ttyUSB0')
+	
+	print "Node launched with parameters:"
+	print "Tick Left "+str(calibTickLeft)
+	print "Tick right "+str(calibTickRight)
+	print "Baseline "+str(calibBaseline)
+	print "Serial port "+serialPort
+	
+	##SERIAL STUFF####################################################################
+	ser = serial.Serial(serialPort, 115200)
+	ser.xonxoff = False
+	ser.rtscts = False
+	ser.dsrdtr = False
+	ser.open()
+	ser.isOpen()
+	###################################################################################
+	
 	pub = rospy.Publisher('/odom', Odometry)
+	pub2 = rospy.Publisher('/capybaraTicks', Int8MultiArray)
 	odomBroadcaster = tf.TransformBroadcaster()
 	t = CleaningThread()
 	t.start()
+	threads.append(t)
 	MainLoop()
 	
 	
