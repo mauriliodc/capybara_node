@@ -39,15 +39,14 @@ if __name__ == '__main__':
     rospy.init_node('capybara_control', anonymous=True)
     rospy.myargv(argv=sys.argv)
 
-    if len(sys.argv) == 1:
-        print "\nPlease take a moment and consider setting these parameters:\n"
-        print "_calibTickLeft"
-        print "_calibTickRight"
-        print "_calibBaseline"
-        print "_serialPort"
-        print "_maxLSpeed"
-        print "_maxASpeed"
-        exit(0)
+
+    print "\nAvailable parameters:\n"
+    print "_calibTickLeft"
+    print "_calibTickRight"
+    print "_calibBaseline"
+    print "_serialPort"
+    print "_maxLSpeed"
+    print "_maxASpeed"
 
     
     odometryPublisher = rospy.Publisher('odom', Odometry)
