@@ -60,6 +60,7 @@ if __name__ == '__main__':
     serialPort = rospy.get_param('~serialPort', '/dev/ttyUSB0')
     maxLSpeed =  rospy.get_param('~maxLSpeed',60)
     maxASpeed =  rospy.get_param('~maxASpeed',60)
+    robotName =  rospy.get_param('~robotName',"bigRodent")
     
     capy = Capybara_robot(  calibTickLeft,
                                                calibTickRight,
@@ -68,7 +69,8 @@ if __name__ == '__main__':
                                                maxASpeed,
                                                serialPort,
                                                odometryPublisher,
-                                               tfPublisher)
+                                               tfPublisher,
+                                               robotName)
     MainLoop()
     
     

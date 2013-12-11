@@ -39,7 +39,10 @@ class Capybara_robot:
     _odometryPublisher=None
     _TFPublisher=None
     
-    def __init__(self, leftTicks, RightTicks, Baseline, LinearSpeed, AngularSpeed, serialPort,odom,tf):
+    #Name
+    _robotName=0
+    
+    def __init__(self, leftTicks, RightTicks, Baseline, LinearSpeed, AngularSpeed, serialPort,odom,tf,robotName):
         self._leftTicks = leftTicks
         self._rightTicks = RightTicks
         self._baseline = Baseline
@@ -49,6 +52,8 @@ class Capybara_robot:
         self._x = 0
         self._y = 0
         self._theta = 0
+
+        self._robotName=robotName
 
         self._odometryPublisher=odom
         self._TFPublisher=tf
@@ -97,11 +102,13 @@ class Capybara_robot:
         quaternion.y = 0.0
         quaternion.z = sin( self. _theta / 2.0)
         quaternion.w = cos( self. _theta / 2.0)
-        self._TFPublisher.sendTransform((self. _x,self. _y, 0), (quaternion.x, quaternion.y, quaternion.z, quaternion.w),rospy.Time.now(),"base_footprint","odom")
+        self._TFPublisher.sendTransform((self. _x,self. _y, 0), (quaternion.x, quaternion.y, quaternion.z, quaternion.w),rospy.Time.now(),
+        "/"+self._robotName+"/"+"base_footprint",
+        "/"+self._robotName+"/"+"odom")
 
         odom = Odometry()
-        odom.header.frame_id = "odom"
-        odom.child_frame_id = "base_footprint"
+        odom.header.frame_id = "/"+self._robotName+"/"+"odom"
+        odom.child_frame_id = "/"+self._robotName+"/"+"base_footprint"
         odom.header.stamp = rospy.Time.now()
         odom.pose.pose.position.x = self. _x
         odom.pose.pose.position.y = self. _y
