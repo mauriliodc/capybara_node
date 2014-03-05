@@ -1,10 +1,11 @@
 <launch>
 	<master auto="start"/>
-	<include file="$(find human_interface)/launch/robot_teleop_joy.launch" />
-	<node name="capybara_name" pkg="capybara_running_wild" type="capybara_motion.py" output="screen"/>
+	<include file="$(find human_interface)/launch/robot_teleop_joy.launch" /> 
+	<node name="capybara_name" pkg="capybara_node" type="shinyCapybara.py" output="screen"/>
 	<node name="hokuyo_node" pkg="hokuyo_node" type="hokuyo_node">
-		<param name="frame_id" value="/laser_cose"/>
+		<param name="frame_id" value="/bigRodent/laser"/>
 	</node>
 	
-	<node name="link_broadcaster_0" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 /base_footprint /laser_cose 1000" />
+	<node name="link_broadcaster_0" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 /bigRodent/base_footprint /bigRodent/base_link 1000" />
+	<node name="link_broadcaster_1" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 /bigRodent/base_link /bigRodent/laser 1000" />
  </launch>

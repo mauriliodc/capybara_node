@@ -1,0 +1,9 @@
+<launch>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find dis_navigation)/maps/dis-Basement-2011-11-07.yaml">
+	<param name="frame_id" value="/bigRodent/map"/>
+	</node>
+	<param name="tf_prefix" value="bigRodent" />
+	<include file="$(find capybara_node)/launch/capybara_launcher.launch" />
+	<include file="$(find dis_navigation)/config/localization/amcl_nodeCapybara.xml"/>
+	<include file="$(find dis_navigation)/config/navigation/move_baseCapybara.xml" />
+ </launch>

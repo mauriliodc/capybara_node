@@ -121,7 +121,7 @@ class Capybara_robot:
 
     def serialHandler(self, sensedLeftTicks, sensedRightTicks):
         self.computeOdometryFromTicks(-sensedLeftTicks, sensedRightTicks)
-        print "X: "+str(self. _x)+" Y: "+str(self. _y)+" T: "+str(self. _theta)
+        #print "X: "+str(self. _x)+" Y: "+str(self. _y)+" T: "+str(self. _theta)
 
     def kill(self):
             self._capybaraParser.closeAll()

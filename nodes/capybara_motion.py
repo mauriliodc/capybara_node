@@ -1,23 +1,28 @@
 #!/usr/bin/env python
+
+#ROS imports
 import rospy
 import roslib
 roslib.load_manifest('capybara_node')
-from std_msgs.msg import String
 from std_msgs.msg import Int8MultiArray
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Pose
 import tf
-from math import sin
-from math import cos
-import serial
 import threading
+#--------------------------------------------------------------
+
+#System imports
 import sys
-import traceback
-import time
+import serial
 import signal
 import sys
+#--------------------------------------------------------------
+
+#Local Imports
+from capybara_utils import add_nulls
+#--------------------------------------------------------------
+
 
 threads = []
 
@@ -106,7 +111,7 @@ class CleaningThread(threading.Thread):
 					quaternion.w = cos(poseT / 2.0)
 					odomBroadcaster.sendTransform((poseX,poseY, 0), (quaternion.x, quaternion.y, quaternion.z, quaternion.w),rospy.Time.now(),"base_footprint","odom")
 					odom = Odometry()
-					odom.header.frame_id = "/odom"
+					odom.header.frame_id = "odom"
 					odom.child_frame_id = "base_footprint"
 					odom.header.stamp = rospy.Time.now()
 					odom.pose.pose.position.x = poseX
@@ -166,12 +171,7 @@ calibTickLeft=0
 calibTickRight=0
 calibBaseline=0
 
-##UTILITY FUNCTIONS###############################################################
-def add_nulls(num, cnt=2):
-	cnt = cnt - len(str(num))
-	nulls = '0' * cnt
-	return '%s%s' % (nulls, num)
-##################################################################################
+
 
 
 def SerialVelocityCommandSender(data):
@@ -247,7 +247,7 @@ if __name__ == '__main__':
 	ser.isOpen()
 	###################################################################################
 	
-	pub = rospy.Publisher('/odom', Odometry)
+	pub = rospy.Publisher('odom', Odometry)
 	pub2 = rospy.Publisher('/capybaraTicks', Int8MultiArray)
 	odomBroadcaster = tf.TransformBroadcaster()
 	t = CleaningThread()

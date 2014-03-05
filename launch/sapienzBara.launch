@@ -1,0 +1,21 @@
+<launch>
+    <arg name="init_x" default="11.2" />
+    <arg name="init_y" default="2.4" />
+    <arg name="init_a" default="-1.57" />
+    <arg name="init_cov" default="0.25" />
+    
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find dis_navigation)/maps/dis-Basement-2011-11-07.yaml">
+	<param name="frame_id" value="/bigRodent/map"/>
+	</node>
+
+	<param name="tf_prefix" value="bigRodent" />
+	<include file="$(find capybara_node)/launch/capybara_launcher.launch" />
+	<include file="$(find dis_navigation)/config/localization/glocalizer_node.xml" />
+	    <param name="glocalizer/initial_pose_x" value="$(arg init_x)" />
+            <param name="glocalizer/initial_pose_y" value="$(arg init_y)" />
+            <param name="glocalizer/initial_pose_a" value="$(arg init_a)" />
+            <param name="glocalizer/initial_cov_xx" value="$(arg init_cov)" />
+            <param name="glocalizer/initial_cov_yy" value="$(arg init_cov)" />
+            <param name="glocalizer/initial_cov_aa" value="$(arg init_cov)" />
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_9" args="0 0 0 0 0 0 /map /bigRodent/map 100" />
+ </launch>
