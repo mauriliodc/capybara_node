@@ -11,7 +11,7 @@
 		<remap from="/cmd_vel" to ="/desired_cmd_vel"/>
 	</node>
 
-	<node name="capybara_name" pkg="capybara_running_wild" type="capybara_motion.py" output="screen"/>
+	<node name="capybara" pkg="capybara_node" type="shinyCapybara.py" output="screen"/>
 	<node name="hokuyo_node" pkg="hokuyo_node" type="hokuyo_node">
 		<param name="frame_id" value="/base_scan"/>
 	</node>
